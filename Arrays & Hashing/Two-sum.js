@@ -14,3 +14,4 @@ const twoSum = function(nums, target) {
   }
 
 };
+// Time complexity = O(n), Space complexity = O(n)
