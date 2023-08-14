@@ -1,4 +1,4 @@
-const longestConsecutive = function() {
+const longestConsecutive = function(nums) {
   let set = new Set(nums);
   let streak = 0;
 
