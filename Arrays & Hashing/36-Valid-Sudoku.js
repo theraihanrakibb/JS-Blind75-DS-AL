@@ -1,58 +1,40 @@
-const EMPTY = "."
+/**
+ * Array - Fixed Size
+ * Time O(ROWS * COLS) | Space O(CELLS)
+ * @param {character[][]} board
+ * @return {boolean}
+ */
+ 
+var isValidSudoku = (board) => {
+  const [ boards, cells ] = [ 3, 9];
+  const [ boxes, rows, cols ] = getBoards(boards, cells);/* Time O(ROWS * COLS) | Space O(CELLS) */
 
-const possibleNumbers = ["1", "2", "3", "4", "5", "6","7", "8","9"];
-
-const  solveSoduku = function(board){
-  let emptySpaces =[];
-  for(let i = 0; i<board.length; i++){
-    for(let j = 0; j<board.length; j++){
-      if(board[i][j] === EMPTY){
-        emptySpaces.push({row: i, column: j});
-      }
-    }
-  }
-  function recurse(emptySpaceIndex){
-    //base case - end
-    if(emptySpaceIndex >= emptySpaces.length){
-      return true;
-    }
-    const {row, column} = emptySpaces[emptySpaceIndex];
-   
-    for(let i = 0; i<possibleNumbers.length; i++){
-      let num = possibleNumbers[i];
-        // check if valid
-        if(isValid(num, row, column, board)){
-          board[row][column] = num;
-            // recurse
-            if(recurse(emptySpaceIndex+1)){
-              return true;
-            }
-          // backtrack
-          board[row][column] = EMPTY;
-        }
-      }
-      return false;
-    }
-    recurse(0)
-  return board;
+  return searchGrid(board, boxes, rows, cols);           /* Time O(ROWS * COLS) | Space O(CELLS) */
 }
 
-function isValid(number, row, column, board){
-  // check col, row, 3X3 matrix
-  for(let i = 0; i<board.length; i++){
-    if(board[row][i] === number || board[i][column] === number){
-      return false;
-    }// check 3X3 matrix
-      let startRow = Math.floor(row / 3) * 3;
-      let startColumn = Math.floor(column / 3) * 3;
-      
-      for(let i = startRow; i<startRow + 3; i+=1){
-        for(let j = startColumn; j<startColumn + 3; j+=1){
-          if (board[j][i] === number) {
-            return false;
-          }
-        }
+var getBoards = (boards, cells) => new Array(boards).fill()
+  .map(() => new Array(cells).fill(0));
+
+var searchGrid = (board, boxes, rows, cols) => {
+  const [ _rows, _cols ] = [ 9, 9 ];
+
+  for (let row = 0; row < _rows; row++) {/* Time O(ROWS)*/
+      for (let col = 0; col < _cols; col++) {/* Time O(COLS)*/
+          const char = board[row][col];
+          const position = 1 << (char - 1);
+          const index = (Math.floor(row / 3) * 3) + Math.floor(col / 3);
+
+          const isEmpty = char === '.';
+          if (isEmpty) continue;
+
+          const hasMoved = (boxes[index] & position) || (cols[col] & position) || (rows[row] & position);
+          if (hasMoved) return false;
+
+          rows[row] |= position;                 /* Space O(CELLS)*/
+          cols[col] |= position;                 /* Space O(CELLS)*/
+          boxes[index] |= position;              /* Space O(CELLS)*/
       }
-    }
+  }
+
   return true;
 }
